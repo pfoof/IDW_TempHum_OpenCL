@@ -26,9 +26,9 @@ def loadProgram(ctx, file):
 
 prog = loadProgram(ctx, "projekt_opencl.cl")
 
-example_input = [ [10.0, 14.0, 18.0],[7.0, 6.5, 12.0],[3.0, 1.0, 0.4] ]
+example_input = [ 10.0, 14.0, 18.0, 7.0, 6.5, 12.0, 3.0, 1.0, 0.4 ]
 example_input_size = [3,3]
-example_output_size = [64,64]
+example_output_size = [24,24]
 
 np_input = np.array(example_input, dtype=np.float32)
 np_input_size = np.array(example_input_size, dtype=np.uint32)
@@ -46,4 +46,4 @@ cl.enqueue_copy(queue, output, output_buffer).wait()
 
 #saveImage(output)
 with open('ocldump.json', 'w') as f:
-    json.dump(output, f)
+    json.dump(output.tolist(), f, indent=4)
