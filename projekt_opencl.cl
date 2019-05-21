@@ -50,7 +50,7 @@ __kernel void colorize(
     unsigned int x,y;
     for(x = get_global_id(0); x < image_w; x += w)
         for(y = get_global_id(1); y < image_h; y += h) {
-            edge = smoothstep(-60.0f, 60.0f, values[x * image_h + y]);
+            edge = smoothstep(-40.0f, 40.0f, values[x * image_h + y]);
             r = (unsigned char)(255.0f * edge);
             gb = (unsigned char)(255.0f * (1.0f-edge));
             colors[y * image_w * 3 + x * 3] = r;

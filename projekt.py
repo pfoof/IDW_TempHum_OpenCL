@@ -49,6 +49,7 @@ output = np.zeros( (example_output_size[0], example_output_size[1]), dtype = np.
 cl.enqueue_copy(queue, output, output_buffer).wait()
 cl.enqueue_copy(queue, np_image, image_buffer).wait()
 
-saveImage(output)
+saveImage(np_image)
+
 with open('ocldump.json', 'w') as f:
     json.dump(output.tolist(), f, indent=4)
