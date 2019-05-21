@@ -27,9 +27,9 @@ def saveImage(np_buffer):
 
 prog = loadProgram(ctx, "projekt_opencl.cl")
 
-example_input = [ 10.0, 14.0, 18.0, 7.0, 6.5, 12.0, 3.0, 1.0, 0.4 ]
+example_input = [ 10.0, 14.0, 18.0, -27.0, 6.5, 12.0, 23.0, 1.0, 0.4 ]
 example_input_size = [ 3, 3 ]
-example_output_size = [ 192 , 192 ]
+example_output_size = [ 96 , 96 ]
 
 np_input = np.array(example_input, dtype=np.float32)
 np_input_size = np.array(example_input_size, dtype=np.uint32)

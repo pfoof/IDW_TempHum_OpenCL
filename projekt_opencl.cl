@@ -23,15 +23,15 @@ __kernel void idw2(__global float* input, __global unsigned int* input_size, __g
                 for(int v = 0; v < ih; ++v) {
                     dist = distance( (float2)((float)u * ppp_v, (float)v * ppp_h), pos);
                     if(dist < 0.001f) {
-                        output[x * ow + y] = input[u * ih + v];
+                        output[y * ow + x] = input[v * iw + u];
                         break; break;
                     }
                     dist *= dist;
-                    z += input[u * ih + v] / dist;
+                    z += input[v * iw + u] / dist;
                     distsum += 1.0f/dist;
                 }
 
-            output[x * ow + y] = z / distsum;
+            output[y * ow + x] = z / distsum;
         }
     
 }
@@ -50,7 +50,7 @@ __kernel void colorize(
     unsigned int x,y;
     for(x = get_global_id(0); x < image_w; x += w)
         for(y = get_global_id(1); y < image_h; y += h) {
-            edge = smoothstep(-40.0f, 40.0f, values[x * image_h + y]);
+            edge = smoothstep(-40.0f, 40.0f, values[y * image_w + x]);
             r = (unsigned char)(255.0f * edge);
             gb = (unsigned char)(255.0f * (1.0f-edge));
             colors[y * image_w * 3 + x * 3] = r;
