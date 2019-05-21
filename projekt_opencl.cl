@@ -46,16 +46,16 @@ __kernel void colorize(
     unsigned int image_h = size[1];
     
     float edge = 0.5f;
-    unsigned char r,gb;
-    int x,y;
+    unsigned char r, gb;
+    unsigned int x,y;
     for(x = get_global_id(0); x < image_w; x += w)
         for(y = get_global_id(1); y < image_h; y += h) {
             edge = smoothstep(-60.0f, 60.0f, values[x * image_h + y]);
             r = (unsigned char)(255.0f * edge);
             gb = (unsigned char)(255.0f * (1.0f-edge));
-            colors[x * image_h * 3 + y * 3] = r;
-            colors[x * image_h * 3 + y * 3 + 1] = gb;
-            colors[x * image_h * 3 + y * 3 + 2] = gb;
+            colors[y * image_w * 3 + x * 3] = r;
+            colors[y * image_w * 3 + x * 3 + 1] = gb;
+            colors[y * image_w * 3 + x * 3 + 2] = gb;
         }
 }
 
