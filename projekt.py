@@ -3,9 +3,22 @@ import numpy as np
 import json
 from scipy.misc import imsave
 
+# Settings
+
+DUMP_JSON = False
+MAKE_IMAGE = True
+OUTPUT_SIZE = [ 256, 256 ]
+IDW_GWS = (24, 24)
+IMAGE_GWS = (24, 24)
+LOAD_FILE = 'input.json'
+
+# endof Settings
+
 ctx = cl.create_some_context()
 queue = cl.CommandQueue(ctx)
 mf = cl.mem_flags
+
+# Helper functions
 
 def loadProgram(ctx, file):
     f = open(file, "r")
@@ -25,11 +38,17 @@ def loadProgram(ctx, file):
 def saveImage(np_buffer):
     imsave("test.jpg", np_buffer)
 
+def loadData(file):
+    with open(file, 'r') as f:
+        d = json.load(f)
+        return (d['size'], d['data'])
+
+# Main
+
 prog = loadProgram(ctx, "projekt_opencl.cl")
 
-example_input = [ 10.0, 14.0, 18.0, -27.0, 6.5, 12.0, 23.0, 1.0, 0.4 ]
-example_input_size = [ 3, 3 ]
-example_output_size = [ 96 , 96 ]
+example_input_size, example_input = loadData(LOAD_FILE)
+example_output_size = OUTPUT_SIZE
 
 np_input = np.array(example_input, dtype=np.float32)
 np_input_size = np.array(example_input_size, dtype=np.uint32)
@@ -40,16 +59,20 @@ input = cl.Buffer(ctx, mf.READ_ONLY | mf.COPY_HOST_PTR, np_input.nbytes, hostbuf
 input_size = cl.Buffer(ctx, mf.READ_ONLY | mf.COPY_HOST_PTR, np_input_size.nbytes, hostbuf = np_input_size)
 output_size = cl.Buffer(ctx, mf.READ_ONLY | mf.COPY_HOST_PTR, np_output_size.nbytes, hostbuf = np_output_size)
 output_buffer = cl.Buffer(ctx, mf.READ_WRITE, example_output_size[0] * example_output_size[1] * 4)
-image_buffer = cl.Buffer(ctx, mf.WRITE_ONLY, np_image.nbytes)
+if MAKE_IMAGE:
+    image_buffer = cl.Buffer(ctx, mf.WRITE_ONLY, np_image.nbytes)
 
-prog.idw2(queue, (24,24), None, input, input_size, output_buffer, output_size).wait()
-prog.colorize(queue, (24, 24), None, output_buffer, image_buffer, output_size).wait()
+prog.idw2(queue, IDW_GWS, None, input, input_size, output_buffer, output_size).wait()
+if MAKE_IMAGE:
+    prog.colorize(queue, IMAGE_GWS, None, output_buffer, image_buffer, output_size).wait()
 
 output = np.zeros( (example_output_size[0], example_output_size[1]), dtype = np.float32 )
 cl.enqueue_copy(queue, output, output_buffer).wait()
-cl.enqueue_copy(queue, np_image, image_buffer).wait()
+if MAKE_IMAGE:
+    cl.enqueue_copy(queue, np_image, image_buffer).wait()
 
-saveImage(np_image)
+    saveImage(np_image)
 
-with open('ocldump.json', 'w') as f:
-    json.dump(output.tolist(), f, indent=4)
+if DUMP_JSON:
+    with open('ocldump.json', 'w') as f:
+        json.dump(output.tolist(), f, indent=4)
