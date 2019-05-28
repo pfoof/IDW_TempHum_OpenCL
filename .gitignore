@@ -1,2 +1,5 @@
 ocldump.json
 test.jpg
+*.jpg
+*.so
+
