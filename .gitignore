@@ -3,3 +3,6 @@ test.jpg
 *.jpg
 *.so
 
+libOpenCL.so.1
+libOpenCL.so.1.2
+clintercept.conf

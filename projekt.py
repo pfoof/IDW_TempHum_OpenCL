@@ -7,6 +7,7 @@ from scipy.misc import imsave
 
 DUMP_JSON = False
 MAKE_IMAGE = True
+PROFILING = True
 OUTPUT_SIZE = [ 256, 512 ]
 IDW_GWS = (12, 24)
 IMAGE_GWS = (12, 24)
@@ -15,7 +16,7 @@ LOAD_FILE = 'input.json'
 # endof Settings
 
 ctx = cl.create_some_context()
-queue = cl.CommandQueue(ctx)
+queue = cl.CommandQueue(ctx, properties = cl.command_queue_properties.PROFILING_ENABLE) if PROFILING else cl.CommandQueue(ctx)
 mf = cl.mem_flags
 
 # Helper functions
@@ -38,21 +39,19 @@ def loadProgram(ctx, file):
 def saveImage(np_buffer, index):
     imsave("test_%d.jpg" % index, np_buffer)
 
-def loadData(file, arr):
+def loadData(file):
     with open(file, 'r') as f:
         arr = json.load(f)
-        return len(arr)
+        return (len(arr), arr)
 
 # Main
 
 prog = loadProgram(ctx, "projekt_opencl.cl")
 
-arr = []
-arrlen = loadData(LOAD_FILE, arr)
+arrlen, arr = loadData(LOAD_FILE)
 example_output_size = OUTPUT_SIZE
 
-for record in arr:
-
+for (i, record) in enumerate(arr):
     example_input_size, example_input = record['size'], record['data']
     
     np_input = np.array(example_input, dtype=np.float32)
@@ -67,17 +66,41 @@ for record in arr:
     if MAKE_IMAGE:
         image_buffer = cl.Buffer(ctx, mf.WRITE_ONLY, np_image.nbytes)
 
-    prog.idw2(queue, IDW_GWS, None, input, input_size, output_buffer, output_size).wait()
+    idw2event = prog.idw2(queue, IDW_GWS, None, input, input_size, output_buffer, output_size)
+    idw2event.wait()
     if MAKE_IMAGE:
-        prog.colorize(queue, IMAGE_GWS, None, output_buffer, image_buffer, output_size).wait()
+        colorizeevent = prog.colorize(queue, IMAGE_GWS, None, output_buffer, image_buffer, output_size)
+        colorizeevent.wait()
 
     output = np.zeros( (example_output_size[1], example_output_size[0]), dtype = np.float32 )
-    cl.enqueue_copy(queue, output, output_buffer).wait()
+    outputenqueue = cl.enqueue_copy(queue, output, output_buffer)
+    outputenqueue.wait()
     if MAKE_IMAGE:
-        cl.enqueue_copy(queue, np_image, image_buffer).wait()
+        imageenqueue = cl.enqueue_copy(queue, np_image, image_buffer)
+        imageenqueue.wait()
 
         saveImage(np_image, i)
 
     if DUMP_JSON:
         with open("ocldump_%d.json" % i, 'w') as f:
             json.dump(output.tolist(), f, indent=4)
+
+    if PROFILING:
+        with open("profiling.txt", 'a') as f:
+            idw2start = idw2event.get_profiling_info(cl.profiling_info.START)
+            idw2end = idw2event.get_profiling_info(cl.profiling_info.END)
+            print("idw2: %.3f" % ((idw2end - idw2start) / 1000.0) )
+            colorizestart = colorizeevent.get_profiling_info(cl.profiling_info.START)
+            colorizeend = colorizeevent.get_profiling_info(cl.profiling_info.END)
+            print("colorize: %.3f" % ((colorizeend - colorizestart) / 1000.0) )
+            outputstart = outputenqueue.get_profiling_info(cl.profiling_info.START)
+            outputend = outputenqueue.get_profiling_info(cl.profiling_info.END)
+            print("output_copy: %.3f" % ((outputend - outputstart) / 1000.0) )
+            imagestart = imageenqueue.get_profiling_info(cl.profiling_info.START)
+            imageend = imageenqueue.get_profiling_info(cl.profiling_info.END)
+            print("image_copy: %.3f" % ((imageend - imagestart) / 1000.0) )
+            f.write(" [ %d x %d ]\t\t->[ %d x %d ] \n" % ( example_input_size[0], example_input_size[1], example_output_size[0], example_output_size[1] ) )
+            f.write(" IDW2\t\t\t%.3f\n" % ((idw2end - idw2start) / 1000.0) )
+            f.write(" Colorize\t%.3f\n" % ((colorizeend - colorizestart) / 1000.0) )
+            f.write(" Output_copy\t%.3f\n" % ((outputend - outputstart) / 1000.0) )
+            f.write(" Image_copy\t%.3f\n" % ((imageend - imagestart) / 1000.0) )
