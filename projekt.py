@@ -101,7 +101,7 @@ for (i, record) in enumerate(arr):
             print("image_copy: %.3f" % ((imageend - imagestart) / 1000.0) )
             f.write(" \n[ %d x %d ]\t\t->[ %d x %d ] \n" % ( example_input_size[0], example_input_size[1], example_output_size[0], example_output_size[1] ) )
             f.write(" GWS: idw = %d, %d\timage = %d, %d\n" % (IDW_GWS + IMAGE_GWS) )
-            f.write(" IDW2\t\t\t%.3f\n" % ((idw2end - idw2start) / 1000.0) )
+            f.write(" IDW2\t\t%.3f\n" % ((idw2end - idw2start) / 1000.0) )
             f.write(" Colorize\t%.3f\n" % ((colorizeend - colorizestart) / 1000.0) )
             f.write(" Output_copy\t%.3f\n" % ((outputend - outputstart) / 1000.0) )
             f.write(" Image_copy\t%.3f\n" % ((imageend - imagestart) / 1000.0) )
