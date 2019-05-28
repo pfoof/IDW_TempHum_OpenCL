@@ -9,8 +9,8 @@ DUMP_JSON = False
 MAKE_IMAGE = True
 PROFILING = True
 OUTPUT_SIZE = [ 512, 512 ]
-IDW_GWS = (128, 128)
-IMAGE_GWS = (128, 128)
+IDW_GWS = (96, 96)
+IMAGE_GWS = (96, 96)
 LOAD_FILE = 'input.json'
 
 # endof Settings
