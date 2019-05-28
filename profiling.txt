@@ -1,0 +1,70 @@
+ 
+[ 3 x 3 ]		->[ 256 x 512 ] 
+ GWS: idw = 12, 24	image = 12, 24
+ IDW2			14781.333
+ Colorize	1551.556
+ Output_copy	739.444
+ Image_copy	456.667
+ 
+[ 5 x 5 ]		->[ 256 x 512 ] 
+ GWS: idw = 12, 24	image = 12, 24
+ IDW2			47202.000
+ Colorize	1541.667
+ Output_copy	977.889
+ Image_copy	619.000
+ 
+[ 3 x 3 ]		->[ 512 x 512 ] 
+ GWS: idw = 4, 4	image = 4, 4
+ IDW2			282342.111
+ Colorize	20541.445
+ Output_copy	1576.000
+ Image_copy	967.778
+ 
+[ 5 x 5 ]		->[ 512 x 512 ] 
+ GWS: idw = 4, 4	image = 4, 4
+ IDW2			714194.111
+ Colorize	19821.667
+ Output_copy	1881.333
+ Image_copy	877.445
+ 
+[ 3 x 3 ]		->[ 512 x 512 ] 
+ GWS: idw = 16, 16	image = 16, 16
+ IDW2			23886.889
+ Colorize	2817.111
+ Output_copy	1283.000
+ Image_copy	844.667
+ 
+[ 5 x 5 ]		->[ 512 x 512 ] 
+ GWS: idw = 16, 16	image = 16, 16
+ IDW2			62550.889
+ Colorize	2443.111
+ Output_copy	1364.444
+ Image_copy	1188.000
+ 
+[ 3 x 3 ]		->[ 512 x 512 ] 
+ GWS: idw = 32, 32	image = 32, 32
+ IDW2			11955.333
+ Colorize	2685.666
+ Output_copy	1522.445
+ Image_copy	961.222
+ 
+[ 5 x 5 ]		->[ 512 x 512 ] 
+ GWS: idw = 32, 32	image = 32, 32
+ IDW2			31131.112
+ Colorize	2305.778
+ Output_copy	1426.333
+ Image_copy	893.778
+ 
+[ 3 x 3 ]		->[ 512 x 512 ] 
+ GWS: idw = 128, 128	image = 128, 128
+ IDW2			26065.333
+ Colorize	4219.778
+ Output_copy	1446.778
+ Image_copy	1019.111
+ 
+[ 5 x 5 ]		->[ 512 x 512 ] 
+ GWS: idw = 128, 128	image = 128, 128
+ IDW2			29345.222
+ Colorize	2127.222
+ Output_copy	1324.223
+ Image_copy	897.111
