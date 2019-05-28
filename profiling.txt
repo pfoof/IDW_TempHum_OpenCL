@@ -82,3 +82,17 @@
  Colorize	2401.444
  Output_copy	1398.666
  Image_copy	956.555
+ 
+[ 3 x 3 ]		->[ 512 x 512 ] 
+ GWS: idw = 96, 96	image = 96, 96
+ IDW2			11349.000
+ Colorize		2342.667
+ Output_copy	1307.778
+ Image_copy		860.667
+ 
+[ 5 x 5 ]		->[ 512 x 512 ] 
+ GWS: idw = 96, 96	image = 96, 96
+ IDW2			29859.556
+ Colorize		2404.223
+ Output_copy	1415.333
+ Image_copy		1082.889
