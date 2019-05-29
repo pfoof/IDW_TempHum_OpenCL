@@ -99,9 +99,18 @@ for (i, record) in enumerate(arr):
             imagestart = imageenqueue.get_profiling_info(cl.profiling_info.START)
             imageend = imageenqueue.get_profiling_info(cl.profiling_info.END)
             print("image_copy: %.3f" % ((imageend - imagestart) / 1000.0) )
-            f.write(" \n[ %d x %d ]\t\t->[ %d x %d ] \n" % ( example_input_size[0], example_input_size[1], example_output_size[0], example_output_size[1] ) )
+            f.write(" \n---------------\n[ %d x %d ]\t\t->[ %d x %d ] \n" % ( example_input_size[0], example_input_size[1], example_output_size[0], example_output_size[1] ) )
             f.write(" GWS: idw = %d, %d\timage = %d, %d\n" % (IDW_GWS + IMAGE_GWS) )
-            f.write(" IDW2\t\t\t%.3f\n" % ((idw2end - idw2start) / 1000.0) )
+            
+            LMS = ctx.devices[0].get_info(cl.device_info.LOCAL_MEM_SIZE) // 1024
+            GMS = ctx.devices[0].get_info(cl.device_info.GLOBAL_MEM_SIZE) // (1024 * 1024)
+            EU = ctx.devices[0].get_info(cl.device_info.MAX_COMPUTE_UNITS)
+            FREQ = ctx.devices[0].get_info(cl.device_info.MAX_CLOCK_FREQUENCY)
+            DEV_NAME = ctx.devices[0].get_info(cl.device_info.NAME)
+            f.write(" Device: %s \n" % DEV_NAME )
+            f.write(" MEM: local = %d kB, global = %d MB, EU = %d @%dMHz\n" % (LMS, GMS, EU, FREQ) )
+            
+            f.write(" \nIDW2\t\t\t%.3f\n" % ((idw2end - idw2start) / 1000.0) )
             f.write(" Colorize\t\t%.3f\n" % ((colorizeend - colorizestart) / 1000.0) )
             f.write(" Output_copy\t%.3f\n" % ((outputend - outputstart) / 1000.0) )
             f.write(" Image_copy\t\t%.3f\n" % ((imageend - imagestart) / 1000.0) )
