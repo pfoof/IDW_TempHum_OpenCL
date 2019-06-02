@@ -38,7 +38,7 @@ __kernel void idw2(__global float* input, __global unsigned int* input_size, __g
 
 __kernel void colorize(
         __global float* values,
-        __global unsigned char* colors,
+        __global uchar4* colors,
         __global unsigned int* size) {
     unsigned int w = get_global_size(0);
     unsigned int h = get_global_size(1);
@@ -53,9 +53,7 @@ __kernel void colorize(
             edge = smoothstep(-40.0f, 40.0f, values[y * image_w + x]);
             r = (unsigned char)(255.0f * edge);
             gb = (unsigned char)(255.0f * (1.0f-edge));
-            colors[y * image_w * 3 + x * 3] = r;
-            colors[y * image_w * 3 + x * 3 + 1] = gb;
-            colors[y * image_w * 3 + x * 3 + 2] = gb;
+            colors[y * image_w + x] = (uchar4)(r, gb, gb, 255);
         }
 }
 

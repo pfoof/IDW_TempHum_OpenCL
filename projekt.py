@@ -1,3 +1,4 @@
+import sys
 import pyopencl as cl
 import numpy as np
 import json
@@ -8,10 +9,15 @@ from scipy.misc import imsave
 DUMP_JSON = False
 MAKE_IMAGE = True
 PROFILING = True
-OUTPUT_SIZE = [ 512, 512 ]
-IDW_GWS = (96, 96)
-IMAGE_GWS = (96, 96)
+OUTPUT_SIZE = [ 1024, 1024 ]
+IDW_GWS = (128, 128)
+IMAGE_GWS = (128, 128)
 LOAD_FILE = 'input.json'
+
+if len(sys.argv) > 1:
+    gws = int(sys.argv[1])
+    IDW_GWS = (gws, gws)
+    IMAGE_GWS = (gws, gws)
 
 # endof Settings
 
@@ -37,7 +43,7 @@ def loadProgram(ctx, file):
     return prog
 
 def saveImage(np_buffer, index):
-    imsave("test_%d.jpg" % index, np_buffer)
+    imsave("test_%d.png" % index, np_buffer)
 
 def loadData(file):
     with open(file, 'r') as f:
@@ -57,7 +63,7 @@ for (i, record) in enumerate(arr):
     np_input = np.array(example_input, dtype=np.float32)
     np_input_size = np.array(example_input_size, dtype=np.uint32)
     np_output_size = np.array(example_output_size, dtype=np.uint32)
-    np_image = np.zeros( (example_output_size[1], example_output_size[0], 3), dtype=np.uint8 )
+    np_image = np.zeros( (example_output_size[1], example_output_size[0], 4), dtype=np.uint8 )
 
     input = cl.Buffer(ctx, mf.READ_ONLY | mf.COPY_HOST_PTR, np_input.nbytes, hostbuf = np_input)
     input_size = cl.Buffer(ctx, mf.READ_ONLY | mf.COPY_HOST_PTR, np_input_size.nbytes, hostbuf = np_input_size)
