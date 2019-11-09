@@ -135,21 +135,57 @@ int main() {
 
     float* output = (float*)malloc(output_size[0]*output_size[1]*sizeof(float));
     cl_mem output_buffer = clCreateBuffer(context, CL_MEM_WRITE_ONLY | CL_MEM_COPY_HOST_PTR, output_size[0]*output_size[1]*sizeof(float), output, &err);
-
    if(err < 0) {
-      perror("Error creating buffer");
+      perror("Error creating buffer 1");
+      exit(1);
+   };
+    cl_mem output_size_buffer = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, 2 * sizeof(int), output_size, &err);
+    if(err < 0) {
+      perror("Error creating buffer 2");
       exit(1);
    };
 
-    cl_mem input_buffer = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, output_size[0]*output_size[1]*sizeof(float), output, &err);
-
+    //Verify this!
+    cl_mem input_buffer = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, input_size[0]*input_size[1]*sizeof(float), input, &err);
    if(err < 0) {
-      perror("Error creating buffer");
+      perror("Error creating buffer 3");
       exit(1);
    };
-
+    cl_mem input_size_buffer = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, 2 * sizeof(int), input_size, &err);
+   if(err < 0) {
+      perror("Error creating buffer 4");
+      exit(1);
+   };
     
+  /* Create kernel arguments */
+   err = clSetKernelArg(kernel_idw, 0, sizeof(cl_mem), &input_buffer);
+   err |= clSetKernelArg(kernel_idw, 1, sizeof(cl_mem), &input_size_buffer);
+   err |= clSetKernelArg(kernel_idw, 2, sizeof(cl_mem), &output_buffer);
+   err |= clSetKernelArg(kernel_idw, 3, sizeof(cl_mem), &output_size_buffer);
+   if(err < 0) {
+      perror("Couldn't create a kernel argument");
+      exit(1);
+   }
 
+   err = clEnqueueNDRangeKernel(queue, kernel, 1, NULL, &global_size, 
+         NULL, 0, NULL, NULL); 
+   if(err < 0) {
+      perror("Couldn't enqueue the kernel");
+      exit(1);
+   }
+
+   /* Read the kernel's output    */
+   err = clEnqueueReadBuffer(queue, output_buffer, CL_TRUE, 0, 
+         output_size[0]*output_size[1]*sizeof(float), output, 0, NULL, NULL);
+   if(err < 0) {
+      perror("Couldn't read the buffer");
+      exit(1);
+   }
+
+   clReleaseMemObject(output_buffer);
+   clReleaseMemObject(input_buffer);
+   clReleaseMemObject(output_size_buffer);
+   clReleaseMemObject(input_size_buffer);
    clReleaseKernel(kernel_idw);
    clReleaseKernel(kernel_colorize);
    clReleaseCommandQueue(queue);
