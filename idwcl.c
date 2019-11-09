@@ -182,6 +182,17 @@ int main() {
       exit(1);
    }
 
+    FILE* output_file;
+    output_file = fopen("out.csv", "w");
+    int i,j;
+    for(i = 0; i < output_size[1]; ++i) {
+        for(j = 0; j < output_size[0]; ++j) {
+            fprintf(output_file, "%.3f, ", output[i * output_size[0] + j]);
+        }
+        fprintf(output_file, "\n");
+    }
+    fclose(output_file);
+
    clReleaseMemObject(output_buffer);
    clReleaseMemObject(input_buffer);
    clReleaseMemObject(output_size_buffer);
