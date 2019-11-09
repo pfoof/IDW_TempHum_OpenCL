@@ -5,7 +5,10 @@
 #include <CL/cl.h>
 #include <stdio.h>
 
+#include "input.h"
+
 const int output_size[2] = { 1024, 1024 };
+const int global_size[2] = { 16, 16 };
 
 cl_device_id create_device() {
 
@@ -127,7 +130,7 @@ int main() {
       perror("Couldn't create a kernel idw");
       exit(1);
    };
-   kernel_colorize = clCreateKernel(program, COLORIZE_FUNC, &err);
+   kernel_colorize = clCreateKernel(program, COLOR_FUNC, &err);
    if(err < 0) {
       perror("Couldn't create a kernel colorize");
       exit(1);
@@ -167,7 +170,7 @@ int main() {
       exit(1);
    }
 
-   err = clEnqueueNDRangeKernel(queue, kernel, 1, NULL, &global_size, 
+   err = clEnqueueNDRangeKernel(queue, kernel_idw, 1, NULL, &global_size, 
          NULL, 0, NULL, NULL); 
    if(err < 0) {
       perror("Couldn't enqueue the kernel");
