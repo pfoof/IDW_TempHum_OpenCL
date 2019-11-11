@@ -5,6 +5,9 @@
 
 #define TAG_NPROC 100
 
+#define OUTPUT_ROWS 256
+#define OUTPUT_COLS 256
+
 unsigned int processors = 1;
 
 void idw2(float* _input, int* _input_size, float* output, int* output_size) {
@@ -35,7 +38,7 @@ int main(int argc, char* argv[]) {
         }
         printf("Total of %d cores in %d processes\n", allcores, nthreads);
         
-
+        int rows_per_core = (float)OUTPUT_ROWS / (float)allcores;
 
         //end tid == 0
     } else {
