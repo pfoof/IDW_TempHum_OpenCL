@@ -7,9 +7,6 @@
 
 #include "input.h"
 
-const int output_size[2] = { 1024, 1024 };
-const int global_size[2] = { 16, 16 };
-
 cl_device_id create_device() {
 
    cl_platform_id platform;
@@ -97,8 +94,22 @@ cl_program build_program(cl_context ctx, cl_device_id dev, const char* filename)
    return program;
 }
 
-int main() {
+int main(int argc, char* argv[]) {
 
+    if(argc < 3) {
+        printf("Usage %s <output_w> <output_h> [glob_w=16] [glob_h=16]\n", argv[0]);
+        exit(2);
+    }
+
+   const int output_size[2] = { atoi(argv[1]), atoi(argv[2]) };
+    int global_size[2];
+    if(argc > 4) {
+        global_size[0] = atoi(argv[3]);
+        global_size[1] = atoi(argv[4]);
+    } else {
+        global_size[0] = 16;
+        global_size[1] = 16;
+    }
 
    /* OpenCL structures */
    cl_device_id device;

@@ -2,7 +2,11 @@ ocldump.json
 test.jpg
 *.jpg
 *.so
+*.png
+*.csv
 
 libOpenCL.so.1
 libOpenCL.so.1.2
 clintercept.conf
+idwcl
+idwomp
