@@ -33,9 +33,9 @@ int main(int argc, char* argv[]) {
             cores[recvStatus.MPI_SOURCE] = r;
             allcores += r;
         }
-        printf("Total of %d cores int %d processes\n", allcores, nthreads);
+        printf("Total of %d cores in %d processes\n", allcores, nthreads);
         
-        
+
 
         //end tid == 0
     } else {
